@@ -197,14 +197,9 @@ def main(config: Config):
             train_minibatch, (epoch_carry.rng, epoch_carry.train_state), permutation
         )
         train_info = jax.tree.map(lambda x: x.mean(), train_info)
-        # eval
-        rng, key = jax.random.split(rng)
-        eval_policy, _ = nnx.merge(epoch_carry.graphdef, train_state)
+        # eval disabled for RTC fine-tuning smoke/full training.
+        # The original eval inside the jitted train_epoch can trigger XLA GPU compiler failures.
         eval_info = {}
-        for horizon in range(1, config.eval.model.action_chunk_size + 1):
-            eval_config = dataclasses.replace(config.eval, execute_horizon=horizon)
-            info, _ = _eval.eval(eval_config, env, key, level, eval_policy, env_params, static_env_params)
-            eval_info.update({f"{k}_{horizon}": v for k, v in info.items()})
         video = None
         return EpochCarry(rng, train_state, epoch_carry.graphdef), ({**train_info, **eval_info}, video)
 

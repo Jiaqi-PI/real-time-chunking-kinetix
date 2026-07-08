@@ -15,7 +15,7 @@ class ModelConfig:
     token_hidden_dim: int = 64
     num_layers: int = 4
     action_chunk_size: int = 8
-    simulated_delay: int | None = None
+    simulated_delay: int | None = 5
 
 
 def posemb_sincos(pos: jax.Array, embedding_dim: int, min_period: float, max_period: float) -> jax.Array:
